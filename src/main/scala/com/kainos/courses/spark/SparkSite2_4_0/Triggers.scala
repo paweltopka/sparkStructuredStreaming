@@ -26,7 +26,7 @@ object Triggers {
     val ds = sparkSession
       .readStream
       .format("rate")
-      .option("rowsPerSecond",10)
+      .option("rowsPerSecond",1000)
       .load
       .as[(Timestamp, Long)]
       .map(x => new sampleData(new Timestamp(x._1.getTime/1000*1000),x._2))

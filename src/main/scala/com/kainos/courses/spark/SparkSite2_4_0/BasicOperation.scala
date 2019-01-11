@@ -30,12 +30,14 @@ object BasicOperation extends Serializable {
 
     //read data from sink
     // streaming DataFrame with IOT device data with schema { device: string, deviceType: string, signal: double, time: string }
-    val df: DataFrame = sparkSession
+    val df = sparkSession
       .readStream
       .format("rate")
       .option("rowsPerSecond",100)
       .load
       .as[(Timestamp, Long)]
+
+
       .map(x => DeviceData(listOfDeviceName(new Random().nextInt(listOfDeviceName.size)),
         listOfDeviceType(new Random().nextInt(listOfDeviceType.size)),
         new Random().nextInt(100),

@@ -12,4 +12,5 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-sql" % "2.4.0"
 )
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
-
+// https://mvnrepository.com/artifact/org.apache.spark/spark-streaming
+libraryDependencies += "org.apache.spark" %% "spark-streaming" % "2.4.0" // % "provided"
