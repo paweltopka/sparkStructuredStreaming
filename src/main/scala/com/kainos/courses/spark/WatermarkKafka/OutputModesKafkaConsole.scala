@@ -7,7 +7,7 @@ import com.kainos.courses.spark.help.HelpfulMethods._
 import org.apache.spark.sql.functions._
 import scala.util.Random
 
-object AppendModeKafkaConsole {
+object OutputModesKafkaConsole {
   case class DeviceData( eventTime: Timestamp,processingTime : Timestamp, value: String)
 
   def main(args: Array[String]): Unit = {
@@ -40,11 +40,10 @@ object AppendModeKafkaConsole {
           new Timestamp(System.currentTimeMillis()),
           x._2))
         .as[DeviceData]
-        .withWatermark("eventTime","1 minutes")
-        .groupBy(
-          window($"eventTime", "1 minutes","20 seconds"),
-          $"value")
+        .withWatermark("eventTime","2 minutes")
+        .groupBy($"eventTime", $"value")
         .count()
+
 
 
 
@@ -60,6 +59,14 @@ object AppendModeKafkaConsole {
       .withColumn("mode",lit("update"))
       .writeStream
       .outputMode("update")
+      .format("console")
+      .option("truncate",false)
+      .start()
+
+    deviceDataStream
+      .withColumn("mode",lit("complete"))
+      .writeStream
+      .outputMode("complete")
       .format("console")
       .option("truncate",false)
       .start()

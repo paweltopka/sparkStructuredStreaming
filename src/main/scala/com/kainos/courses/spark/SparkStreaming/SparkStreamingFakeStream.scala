@@ -1,8 +1,9 @@
-package com.kainos.courses.spark.SparkSite2_4_0
+package com.kainos.courses.spark.SparkStreaming
 
 import org.apache.spark.SparkConf
 import org.apache.spark.rdd.RDD
 import org.apache.spark.streaming.{Seconds, StreamingContext}
+
 import scala.collection.mutable
 
 object SparkStreamingFakeStream {

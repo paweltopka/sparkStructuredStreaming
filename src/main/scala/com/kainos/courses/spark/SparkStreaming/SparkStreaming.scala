@@ -1,8 +1,7 @@
-package com.kainos.courses.spark.SparkSite2_4_0
+package com.kainos.courses.spark.SparkStreaming
 
-import org.apache.spark._
-import org.apache.spark.streaming._
-import org.apache.spark.streaming.StreamingContext._ // not necessary since Spark 1.3
+import org.apache.spark.SparkConf
+import org.apache.spark.streaming.{Seconds, StreamingContext}
 
 object SparkStreaming {
 
