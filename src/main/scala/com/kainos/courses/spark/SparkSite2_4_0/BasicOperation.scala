@@ -17,6 +17,8 @@ object BasicOperation extends Serializable {
     val listOfDeviceType = Seq("mobile","notebook","pc","navigation","camera")
     val listOfDeviceName = Seq("cheese", "bread","ham","pork","apple","device")
 
+    val random = Random
+
     val sparkSession = SparkSession
       .builder
       .master("local[2]")
@@ -25,26 +27,40 @@ object BasicOperation extends Serializable {
 
     import sparkSession.implicits._
 
+    val df = sparkSession.readStream
+        .format("rate")
+        .option("rowsPerSecond",10)
+        .load
+        .as[(Timestamp, Long)]
+        .map(x => DeviceData(listOfDeviceName(random.nextInt(listOfDeviceName.size)),
+          listOfDeviceType(random.nextInt(listOfDeviceType.size)),
+          random.nextDouble(),
+          x._1))
+
+    val ds = df.as[DeviceData]
+
+    // Select the devices which have signal more than 10
+    df.select("device").where("signal > 0.5")      // using untyped APIs
+
+    ds.filter(_.signal > 0.5).map(_.device)         // using typed APIs
+
+    // Running count of the number of updates for each device type
+    df.groupBy("deviceType").count()                          // using untyped API
+
+    // Running average signal for each device type
+    import org.apache.spark.sql.expressions.scalalang.typed
+    ds.groupByKey(_.deviceType).agg(typed.avg(_.signal))    // using typed API
 
 
+    df.createOrReplaceTempView("updates")
+    sparkSession.sql("select count(*) from updates")  // returns another streaming DF
 
-    //read data from sink
-    // streaming DataFrame with IOT device data with schema { device: string, deviceType: string, signal: double, time: string }
-    val df = sparkSession
-      .readStream
-      .format("kafka")
-      .option("kafka.bootstrap.servers", "127.0.0.1:9092")
-      .option("subscribe", "test")
-      .load
-      .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
-      .as[(String, String)]
 
-    val df1 = df.groupBy("value").count()
 
     // Start running the query that prints the running counts to the console
-    val query = df1
+    val query = df
       .writeStream
-      .outputMode("complete")
+      .outputMode("update")
       .format("console")
       .start()
 
