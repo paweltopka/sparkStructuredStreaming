@@ -64,8 +64,6 @@ object BasicOperation extends Serializable {
       .format("console")
       .start()
 
-
-
     query.awaitTermination()
 
   }
