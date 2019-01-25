@@ -36,6 +36,7 @@ object WindowOperation extends Serializable {
       .as[(Timestamp, Long)]
       .map(x => TimestampAndWord(x._1, listOfWords(new Random().nextInt(listOfWords.size))))
       .toDF()
+      .withColumn("time",lit(new Timestamp(System.currentTimeMillis())))
 
 
     // Group the data by window and word and compute the count of each group

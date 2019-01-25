@@ -35,32 +35,28 @@ object Triggers {
       //.count
 
     // Default trigger (runs micro-batch as soon as it can)
-    /*
      val default =  ds.writeStream
       .format("console")
       .queryName("default")
       .start()
       .awaitTermination()
-    */
 
     // ProcessingTime trigger with two-seconds micro-batch interval
-   /* val processingTime = ds.writeStream
+    val processingTime = ds.writeStream
       .format("console")
       .outputMode("append")
       .trigger(Trigger.ProcessingTime("5 seconds"))
       .queryName("processing Time")
       .start()
       .awaitTermination()
-*/
 
     // One-time trigger
-  /*  val oneTime =  ds.writeStream
+    val oneTime =  ds.writeStream
       .format("console")
       .trigger(Trigger.Once())
       .queryName("One-Time")
       .start()
       .awaitTermination()
-*/
     // Continuous trigger with one-second checkpointing interval
     //in console mode data are display each checkpointing interval - 1 second
     // if the sink will be kafka then latency will lower

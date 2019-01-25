@@ -1,10 +1,13 @@
 package com.kainos.courses.spark.WatermarkKafka
 
 import java.sql.Timestamp
+
 import org.apache.log4j.Logger
 import org.apache.spark.sql.{DataFrame, Dataset, SparkSession}
 import com.kainos.courses.spark.help.HelpfulMethods._
 import org.apache.spark.sql.functions._
+import org.apache.spark.sql.streaming.Trigger
+
 import scala.util.Random
 
 object OutputModesKafkaConsole {
@@ -27,7 +30,7 @@ object OutputModesKafkaConsole {
       .option("kafka.bootstrap.servers", "127.0.0.1:9092")
       .option("subscribe", "test")
       .load
-      .selectExpr( "CAST(value AS STRING)")
+      .selectExpr( "CAST(value AS STRING)") // value: time value
       .as[ String]
 
       val deviceDataStream = valueStreamKafkaSource
@@ -69,6 +72,7 @@ object OutputModesKafkaConsole {
       .outputMode("complete")
       .format("console")
       .option("truncate",false)
+      .trigger(Trigger.ProcessingTime("10 seconds"))
       .start()
 
     query.awaitTermination()
