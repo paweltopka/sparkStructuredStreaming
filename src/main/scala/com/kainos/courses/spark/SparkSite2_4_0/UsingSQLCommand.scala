@@ -3,11 +3,11 @@ package com.kainos.courses.spark.SparkSite2_4_0
 import java.sql.Timestamp
 
 import org.apache.log4j.Logger
-import org.apache.spark.sql.{DataFrame, Dataset, SparkSession}
+import org.apache.spark.sql.SparkSession
 
 import scala.util.Random
 
-object BasicOperation extends Serializable {
+object UsingSQLCommand extends Serializable {
 
   case class DeviceData(device: String, deviceType: String, signal: Double, time: Timestamp)
 
@@ -32,27 +32,17 @@ object BasicOperation extends Serializable {
         .option("rowsPerSecond",10)
         .load
         .as[(Timestamp, Long)]
+       //extend generated data to case class DeviceData
         .map(x => DeviceData(listOfDeviceName(random.nextInt(listOfDeviceName.size)),
           listOfDeviceType(random.nextInt(listOfDeviceType.size)),
           random.nextDouble(),
           x._1))
 
-    val ds = df.as[DeviceData]
-
-    // Select the devices which have signal more than 10
-    val selectedDf = df.select("device").where("signal > 0.5")      // using untyped APIs
-
-    ds.filter(_.signal > 0.5).map(_.device)         // using typed APIs
-
-    // Running count of the number of updates for each device type
-    df.groupBy("deviceType").count()                          // using untyped API
-
-    // Running average signal for each device type
-    import org.apache.spark.sql.expressions.scalalang.typed
-    ds.groupByKey(_.deviceType).agg(typed.avg(_.signal))    // using typed API
+    df.createOrReplaceTempView("updates")
+    val newDf = sparkSession.sql("select count(*) from updates")  // returns another streaming DF
 
     // Start running the query that prints the running counts to the console
-    val query = selectedDf
+    val query = newDf
       .writeStream
       .outputMode("update")
       .format("console")
