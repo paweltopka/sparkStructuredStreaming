@@ -57,6 +57,7 @@ object Triggers {
       .queryName("One-Time")
       .start()
       .awaitTermination()
+
     // Continuous trigger with one-second checkpointing interval
     //in console mode data are display each checkpointing interval - 1 second
     // if the sink will be kafka then latency will lower

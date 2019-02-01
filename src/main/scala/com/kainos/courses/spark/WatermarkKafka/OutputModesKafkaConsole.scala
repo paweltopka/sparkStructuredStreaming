@@ -10,6 +10,13 @@ import org.apache.spark.sql.streaming.Trigger
 
 import scala.util.Random
 
+/*
+To test this code:
+  Send data using kafka-console-producer
+  data should have structure: "integer string"
+  integer is treated like number of second from the start of unix time
+  word is the key
+*/
 object OutputModesKafkaConsole {
   case class DeviceData( eventTime: Timestamp,processingTime : Timestamp, value: String)
 
@@ -49,7 +56,7 @@ object OutputModesKafkaConsole {
 
 
 
-
+//comment unuse
     val query = deviceDataStream
       .withColumn("mode",lit("append"))
       .writeStream
